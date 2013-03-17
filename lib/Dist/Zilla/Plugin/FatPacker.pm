@@ -53,7 +53,12 @@ sub munge_file {
         unlink $_ or die "can't unlink $_: $!\n";
     }
     safe_remove_tree('fatlib');
-    $file->content($fatpack . $content);
+
+    # Extract Unix shebang line, if present
+    my $shebang = (split m{$/}, $content, 2)[0];
+    $shebang = ( index($shebang, '#!') == 0 ) ? $shebang . $/ : "";
+
+    $file->content($shebang . $fatpack . $content);
 }
 __PACKAGE__->meta->make_immutable;
 no Moose;
